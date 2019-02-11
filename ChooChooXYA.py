@@ -187,10 +187,10 @@ def haltMotors(flywheel,intakeState):
     dt.stop(vex.BrakeType.BRAKE)
     twoBar.stop(vex.BrakeType.HOLD)
     if flywheel == False:
-        flywheelOne.stop(vex.BrakeType.COAST)
-        flywheelTwo.stop(vex.BrakeType.COAST)
+         flywheelOne.stop(vex.BrakeType.COAST)
+         flywheelTwo.stop(vex.BrakeType.COAST)
     if intakeState == False:
-        intake.stop(vex.BrakeType.COAST)
+         intake.stop(vex.BrakeType.COAST)
     return True
 
 #moves the robot forwards
@@ -210,23 +210,24 @@ def moveBackwards(time,power):
 #turns the robot left
 def turnLeft(time,power):
     #time measured in milliseconds, power measured in 0-100 percentage
-    newPower = math.fabs(power) / 3
+    newPower = math.fabs(power) / 2.6
     dt.turn(vex.TurnType.LEFT,newPower,vex.VelocityUnits.PCT)
     sys.sleep(time)
 
 #turns the robot right
 def turnRight(time,power):
     #time measured in milliseconds, power measured in 0-100 percentage
-    newPower = math.fabs(power) / 3
+    newPower = math.fabs(power) / 2.6
     dt.turn(vex.TurnType.RIGHT,newPower,vex.VelocityUnits.PCT)
     sys.sleep(time)
 
 #turns the flywheel on
-def turnFlywheelOn(delayStartup = True):
+def turnFlywheelOn(delay = True):
     flywheelOne.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
     flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
-    if delayStartup == True:
-        while flywheelOne.velocity(vex.VelocityUnits.PCT) < 95: #hold the return of the function
+
+    if delay == True:
+        while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 95:
             pass
     return True
 
@@ -260,9 +261,9 @@ def moveArmDown(time,power):
 
 #shoot a ball
 def fireABall():
-    flywheelStatus = turnFlywheelOn()
+    turnFlywheelOn()
     loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
-    while flywheelOne.velocity(vex.VelocityUnits.PCT) > 90:
+    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 90:
         pass
     loader.stop(vex.BrakeType.COAST)
     return True
@@ -271,19 +272,20 @@ def fireABall():
 def checkLoader():
     if sonar.distance(vex.DistanceUnits.IN) < 2 and sonar.distance(vex.DistanceUnits.IN) > 0:
         loader.stop(vex.BrakeType.COAST)
-        flywheelStatus = turnFlywheelOn(False)
+        turnFlywheelOn(False)
+        return True
     else:
-        flywheelStatus = turnFlywheelOff()
+        turnFlywheelOff()
         loader.spin(vex.DirectionType.FWD,30,vex.VelocityUnits.PCT)
-    return False
+        return False
 
 
 # Robot Setup -----------------------------------------------------------------
 
 wheelTravel = 310 # circumference of the wheel (mm)
 trackWidth = 370 # width of the chassis (mm)
-turnSpeed = 20 # how fast the robot will turn (%)
-movementSpeed = 35 # how fast the robot will go forwards and back (%)
+turnSpeed = 25 # how fast the robot will turn (%)
+movementSpeed = 50 # how fast the robot will go forwards and back (%)
 
 brain       = vex.Brain()
 controller  = vex.Controller(vex.ControllerType.PRIMARY)
@@ -308,14 +310,26 @@ def pre_auton():
     pass
 
 def autonomous():
-    fireABall()
+
+    turnFlywheelOn() #fire first ball
+    fireABall() 
     turnFlywheelOn(False)
     turnIntakeOn()
-    robot.moveToXYA(-80,0)
-    robot.moveBy(-80)
-    robot.moveBy(60)
-    fireABall()
+
+    robot.moveToXYA(-100,0) #collect ball
     turnIntakeOff()
+    robot.moveBy(-100)
+
+    robot.moveToXYA(0,65) #move to second position
+
+    fireABall() #fire second ball
+    
+    moveArmUp(0.13,20) #line up to bottom flag
+    robot.rotateTo(-40)
+    robot.moveBy(20)
+    robot.moveBy(-20)
+
+    haltMotors(False,False) #finish autonomous
 
 def drivercontrol():
 
@@ -323,15 +337,13 @@ def drivercontrol():
     intakeStatus = False
     column = 35
 
-    flywheelStatus = turnFlywheelOn()
-
     while True:  # main loop
 
-        checkLoader()
+        flywheelStatus = checkLoader()
         if controller.axis3.value() > 10: #2 bar up
-            moveArmUp(0.005,35)
+            moveArmUp(0.005,45)
         elif controller.axis3.value() < -10: #2bar down
-            moveArmDown(0.005,35)
+            moveArmDown(0.005,45)
         elif controller.axis2.value() > 15: #forwards
             moveForwards(0.005,controller.axis2.value())
         elif controller.axis2.value() < -15: #backwards
