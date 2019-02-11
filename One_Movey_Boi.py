@@ -84,9 +84,9 @@ class Robot:
         self.currentAngle = self.angle #gets current gyro reading
 
         if distance >= 0:
-             dt.start_drive_for(vex.DirectionType.FWD,distance,vex.DistanceUnits.CM,self.movementSpeed,vex.VelocityUnits.PCT)
+             dt.drive_for(vex.DirectionType.FWD,distance,vex.DistanceUnits.CM,self.movementSpeed,vex.VelocityUnits.PCT)
         else:
-            dt.start_drive_for(vex.DirectionType.REV,distance*-1,vex.DistanceUnits.CM,self.movementSpeed,vex.VelocityUnits.PCT)
+            dt.drive_for(vex.DirectionType.REV,distance*-1,vex.DistanceUnits.CM,self.movementSpeed,vex.VelocityUnits.PCT)
 
         self.resolveResult = self.resolveXY(self.x,self.y,distance,self.currentAngle)
         self.x , self.y = self.resolveResult.x , self.resolveResult.y
@@ -121,9 +121,9 @@ class Robot:
                 self.deltaR = (self.deltaR + 360)
 
             if self.deltaR >= 0: #turn the robot
-                self.drivetrain.start_turn_for(vex.TurnType.RIGHT,self.deltaR,vex.RotationUnits.DEG,self.turnSpeed,vex.VelocityUnits.PCT)
+                self.drivetrain.turn_for(vex.TurnType.RIGHT,self.deltaR,vex.RotationUnits.DEG,self.turnSpeed,vex.VelocityUnits.PCT)
             else:
-                self.drivetrain.start_turn_for(vex.TurnType.LEFT,self.deltaR*-1,vex.RotationUnits.DEG,self.turnSpeed,vex.VelocityUnits.PCT)
+                self.drivetrain.turn_for(vex.TurnType.LEFT,self.deltaR*-1,vex.RotationUnits.DEG,self.turnSpeed,vex.VelocityUnits.PCT)
 
             self.angle = self.goalAngle #set new angle
 
@@ -192,8 +192,8 @@ class XYCoordinates:
 # Robot Setup -----------------------------------------------------------------
 
 wheelTravel = 314 # circumference of the wheel (mm)
-trackWidth = 300 # width of the chassis (mm)
-turnSpeed = 25 # how fast the robot will turn (%)
+trackWidth = 375 # width of the chassis (mm)
+turnSpeed = 15 # how fast the robot will turn (%)
 movementSpeed = 30 # how fast the robot will go forwards and back (%)
 
 brain      = vex.Brain()
@@ -205,13 +205,9 @@ dt         = vex.Drivetrain(leftMotor, rightMotor, wheelTravel, trackWidth, vex.
 robot = Robot(dt,turnSpeed,movementSpeed) #create the robot class
 
 # Main program ----------------------------------------------------------------
-
-# Do Something Awesome :-)
-
-# Example
-#robot.moveToXYA(100,100,90) # x = 100, y = 100, a = 90
-  
+    
 while True:
     if controller.buttonA.pressing():
-        robot.moveBy(30)
-        sys.sleep(300)
+        robot.rotateTo(90)
+    else:
+        dt.stop(vex.BrakeType.HOLD)
