@@ -1,0 +1,25 @@
+       # checkLoader()
+
+        # if controller.axis3.value() > 10: #2 bar up
+        #     moveArmUp(5,45)
+        # else:                               
+        #     haltMotors(flywheelStatus,intakeStatus)
+        # """elif controller.axis3.value() < -10: #2bar down
+        #     moveArmDown(5,45)
+        # elif controller.axis2.value() > 15: #forwards
+        #     moveForwards(5,controller.axis2.value())
+        # elif controller.axis2.value() < -15: #backwards
+        #     moveBackwards(5,controller.axis2.value())
+        # elif controller.axis1.value() < -15: #left
+        #     moveLeft(5,controller.axis1.value())
+        # elif controller.axis1.value() > 15: #right
+        #     moveRight(5,controller.axis1.value())
+        # elif controller.ButtonA.pressing(): #fire ball
+        #     flywheelStatus = fireABall()
+        #     sys.sleep(300)
+        # elif controller.ButtonB.pressing(): #intake on/off
+        #     if intakeStatus == True:
+        #         intakeStatus = turnIntakeOff()
+        #     else:
+        #         intakeStatus = turnIntakeOn()
+        #     sys.sleep(300)"""

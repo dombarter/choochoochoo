@@ -180,19 +180,16 @@ class XYCoordinates:
 
 # Functions & Variables -------------------------------------------------------
 
-flywheelStatus = False
-intakeStatus = False
-column = 35
-
 #halts the motors dependent on certain rules
-def haltMotors(flywheel,inatake):
+def haltMotors(flywheel,intakeState):
     leftMotor.stop(vex.BrakeType.BRAKE)
     rightMotor.stop(vex.BrakeType.BRAKE)
+    dt.stop(vex.BrakeType.BRAKE)
     twoBar.stop(vex.BrakeType.HOLD)
-    if flywheel = False:
+    if flywheel == False:
         flywheelOne.stop(vex.BrakeType.COAST)
         flywheelTwo.stop(vex.BrakeType.COAST)
-    if intake == False:
+    if intakeState == False:
         intake.stop(vex.BrakeType.COAST)
     return True
 
@@ -230,7 +227,7 @@ def turnFlywheelOn(delayStartup = True):
     flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
     if delayStartup == True:
         while(flywheelOne.velocity(vex.VelocityUnits.PCT) < 95): #hold the return of the function
-            continue
+            pass
     return True
 
 #turns the flywheel off
@@ -251,14 +248,14 @@ def turnIntakeOff():
 def moveArmUp(time,power):
     #time measured in milliseconds, power measured in 0-100 percentage
     newPower = math.fabs(power)
-    twoBar.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    twoBar.spin(vex.DirectionType.REV,newPower,vex.VelocityUnits.PCT)
     sys.sleep(time)
 
 #move the arm down
 def moveArmDown(time,power):
     #time measured in milliseconds, power measured in 0-100 percentage
     newPower = math.fabs(power)
-    twoBar.spin(vex.DirectionType.REV,100,vex.VelocityUnits.PCT)
+    twoBar.spin(vex.DirectionType.FWD,newPower,vex.VelocityUnits.PCT)
     sys.sleep(time)
 
 #shoot a ball
@@ -317,14 +314,41 @@ def autonomous():
     pass
 
 def drivercontrol():
+
+    flywheelStatus = False
+    intakeStatus = False
+    column = 35
+
+    flywheelStatus = turnFlywheelOn()
+
     while True:
         checkLoader()
-        if thing:
 
+        if controller.axis3.value() > 10: #2 bar up
+            moveArmUp(0.005,35)
+        elif controller.axis3.value() < -10: #2bar down
+            moveArmDown(0.005,35)
+        elif controller.axis2.value() > 15: #forwards
+            moveForwards(0.005,controller.axis2.value())
+        elif controller.axis2.value() < -15: #backwards
+            moveBackwards(0.005,controller.axis2.value())
+        elif controller.axis1.value() < -15: #left
+            turnLeft(0.005,controller.axis1.value())
+        elif controller.axis1.value() > 15: #right
+            turnRight(0.005,controller.axis1.value())
+        elif controller.buttonA.pressing(): #fire ball
+            flywheelStatus = fireABall()
+            sys.sleep(0.3)
+        elif controller.buttonB.pressing(): #intake on/off
+            if intakeStatus == True:
+                intakeStatus = turnIntakeOff()
+            else:
+                intakeStatus = turnIntakeOn()
+            sys.sleep(0.3)
         else:
             haltMotors(flywheelStatus,intakeStatus)
-        
 
+        
 # Set up (but don't start) callbacks for autonomous and driver control periods.
 competition.autonomous(autonomous)
 competition.drivercontrol(drivercontrol)
