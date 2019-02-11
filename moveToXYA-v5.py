@@ -68,12 +68,14 @@ class Robot:
         self.motion = self.moveBy(self.distance) #move by the newly found distance, and specifiying the ignoreCone parmater with a variable
 
         if self.motion == False: #if the robot was unable to complete its journey
+            self.drivetrain.stop(vex.BrakeType.HOLD)
             return False #return that journey was unsuccessful
         else: #otherwsie,
             self.x = x #set new x coordinate
             self.y = y #set new y coordinate
             if angle != None: # if an end rotation angle was specified
                 self.rotateTo(angle) #rotate to the specified angle
+            self.drivetrain.stop(vex.BrakeType.HOLD)
             return True #return that journey was successful
 
     # move the robot forwards by a certain distance
@@ -89,6 +91,7 @@ class Robot:
         self.resolveResult = self.resolveXY(self.x,self.y,distance,self.currentAngle)
         self.x , self.y = self.resolveResult.x , self.resolveResult.y
 
+        self.drivetrain.stop(vex.BrakeType.HOLD)
         return True #robot has been able to reach destination
 
     # rotate the robot to a certain angle
@@ -124,6 +127,7 @@ class Robot:
 
             self.angle = self.goalAngle #set new angle
 
+            self.drivetrain.stop(vex.BrakeType.HOLD)
             return True
 
     # function to update distaplacement of the robot by calculating new coordinates
@@ -187,7 +191,7 @@ class XYCoordinates:
 
 # Robot Setup -----------------------------------------------------------------
 
-wheelTravel = 300 # circumference of the wheel (mm)
+wheelTravel = 314 # circumference of the wheel (mm)
 trackWidth = 300 # width of the chassis (mm)
 turnSpeed = 25 # how fast the robot will turn (%)
 movementSpeed = 30 # how fast the robot will go forwards and back (%)
@@ -202,9 +206,12 @@ robot = Robot(dt,turnSpeed,movementSpeed) #create the robot class
 
 # Main program ----------------------------------------------------------------
 
+# Do Something Awesome :-)
+
+# Example
+#robot.moveToXYA(100,100,90) # x = 100, y = 100, a = 90
+  
 while True:
-
-    # Do Something Awesome :-)
-
-    # Example
-    robot.moveToXYA(100,100,90) # x = 100, y = 100, a = 90
+    if controller.buttonA.pressing():
+        robot.moveBy(30)
+        sys.sleep(300)
