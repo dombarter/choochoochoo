@@ -1,14 +1,3 @@
-# Dom Barter | 2019
-# Move To XYA for v5
-
-# NOTE: this version of moveTOXYA does not check for any objects when moving
-# NOTE: all coordinates are measured in cm and all angles in degrees
-
-# Steps for use:
-# 1. Create new robot class, passing the created drivetrain as a parameter
-# 2. Ensure drivetrain configuration is correct for wheel travel and track width
-# 3. Call public robot functions
-
 # Imports ---------------------------------------------------------------------
 
 import sys
@@ -189,25 +178,159 @@ class XYCoordinates:
         self.y = 0 #y coordinate
         return None
 
+# Functions & Variables -------------------------------------------------------
+
+flywheelStatus = False
+intakeStatus = False
+column = 35
+
+#halts the motors dependent on certain rules
+def haltMotors(flywheel,inatake):
+    leftMotor.stop(vex.BrakeType.BRAKE)
+    rightMotor.stop(vex.BrakeType.BRAKE)
+    twoBar.stop(vex.BrakeType.HOLD)
+    if flywheel = False:
+        flywheelOne.stop(vex.BrakeType.COAST)
+        flywheelTwo.stop(vex.BrakeType.COAST)
+    if intake == False:
+        intake.stop(vex.BrakeType.COAST)
+    return True
+
+#moves the robot forwards
+def moveForwards(time,power):
+    #time measured in milliseconds, power measured in 0-100 percentage
+    newPower = math.fabs(power)
+    dt.drive(vex.DirectionType.FWD,newPower,vex.VelocityUnits.PCT)
+    sys.sleep(time)
+
+#moves the robot backwards
+def moveBackwards(time,power):
+    #time measured in milliseconds, power measured in 0-100 percentage
+    newPower = math.fabs(power)
+    dt.drive(vex.DirectionType.REV,newPower,vex.VelocityUnits.PCT)
+    sys.sleep(time)
+
+#turns the robot left
+def turnLeft(time,power):
+    #time measured in milliseconds, power measured in 0-100 percentage
+    newPower = math.fabs(power) / 3
+    dt.turn(vex.TurnType.LEFT,newPower,vex.VelocityUnits.PCT)
+    sys.sleep(time)
+
+#turns the robot right
+def turnRight(time,power):
+    #time measured in milliseconds, power measured in 0-100 percentage
+    newPower = math.fabs(power) / 3
+    dt.turn(vex.TurnType.RIGHT,newPower,vex.VelocityUnits.PCT)
+    sys.sleep(time)
+
+#turns the flywheel on
+def turnFlywheelOn(delayStartup = True):
+    flywheelOne.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    if delayStartup == True:
+        while(flywheelOne.velocity(vex.VelocityUnits.PCT) < 95): #hold the return of the function
+            continue
+    return True
+
+#turns the flywheel off
+def turnFlywheelOff():
+    return False
+
+#turn the intake on
+def turnIntakeOn():
+    intake.spin(vex.DirectionType.REV,100,vex.VelocityUnits.PCT)
+    return True
+
+#turn the intake off
+def turnIntakeOff():
+    intake.stop(vex.BrakeType.COAST)
+    return False
+
+#move the arm up
+def moveArmUp(time,power):
+    #time measured in milliseconds, power measured in 0-100 percentage
+    newPower = math.fabs(power)
+    twoBar.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    sys.sleep(time)
+
+#move the arm down
+def moveArmDown(time,power):
+    #time measured in milliseconds, power measured in 0-100 percentage
+    newPower = math.fabs(power)
+    twoBar.spin(vex.DirectionType.REV,100,vex.VelocityUnits.PCT)
+    sys.sleep(time)
+
+#shoot a ball
+def fireABall():
+    flywheelStatus = turnFlywheelOn()
+    loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    while(flywheelOne.velocity(vex.VelocityUnits.PCT) > 90):
+        continue
+    loader.stop(vex.BrakeType.COAST)
+    return True
+
+#check the loader for a ball
+def checkLoader():
+    if sonar.distance(vex.DistanceUnits.IN) < 2 and sonar.distance(vex.DistanceUnits.IN) > 0:
+        loader.stop(vex.BrakeType.COAST)
+        flywheelStatus = turnFlywheelOn(False)
+    else:
+        flywheelStatus = turnFlywheelOff()
+        loader.spin(vex.DirectionType.FWD,30,vex.VelocityUnits.PCT)
+    return False
+
+
 # Robot Setup -----------------------------------------------------------------
 
-wheelTravel = 314 # circumference of the wheel (mm)
-trackWidth = 375 # width of the chassis (mm)
-turnSpeed = 25 # how fast the robot will turn (%)
+wheelTravel = 310 # circumference of the wheel (mm)
+trackWidth = 370 # width of the chassis (mm)
+turnSpeed = 20 # how fast the robot will turn (%)
 movementSpeed = 35 # how fast the robot will go forwards and back (%)
 
-brain      = vex.Brain()
-controller = vex.Controller(vex.ControllerType.PRIMARY)
-leftMotor  = vex.Motor(vex.Ports.PORT14, vex.GearSetting.RATIO18_1, False) #example usage
-rightMotor = vex.Motor(vex.Ports.PORT15, vex.GearSetting.RATIO18_1, True) #example usage
-dt         = vex.Drivetrain(leftMotor, rightMotor, wheelTravel, trackWidth, vex.DistanceUnits.MM)
+brain       = vex.Brain()
+controller  = vex.Controller(vex.ControllerType.PRIMARY)
+
+twoBar      = vex.Motor(vex.Ports.PORT1 , vex.GearSetting.RATIO18_1, False)
+leftMotor   = vex.Motor(vex.Ports.PORT14, vex.GearSetting.RATIO18_1, False) 
+rightMotor  = vex.Motor(vex.Ports.PORT15, vex.GearSetting.RATIO18_1, True) 
+flywheelOne = vex.Motor(vex.Ports.PORT9 , vex.GearSetting.RATIO18_1, True) 
+flywheelTwo = vex.Motor(vex.Ports.PORT10, vex.GearSetting.RATIO18_1, False) 
+intake      = vex.Motor(vex.Ports.PORT16, vex.GearSetting.RATIO18_1, False)
+loader      = vex.Motor(vex.Ports.PORT11, vex.GearSetting.RATIO18_1, False)
+
+sonar       = vex.Sonar(brain.three_wire_port.c)
+dt          = vex.Drivetrain(leftMotor, rightMotor, wheelTravel, trackWidth, vex.DistanceUnits.MM)
 
 robot = Robot(dt,turnSpeed,movementSpeed) #create the robot class
+competition = vex.Competition()
 
 # Main program ----------------------------------------------------------------
     
-while True:
-    if controller.buttonA.pressing():
-        robot.rotateTo(90)
-    else:
-        dt.stop(vex.BrakeType.HOLD)
+def pre_auton():
+    # All activities that occur before competition start
+    # Example: setting initial positions
+    pass
+
+def autonomous():
+    # Place autonomous code here
+    pass
+
+def drivercontrol():
+    while True:
+        checkLoader()
+        if thing:
+
+        else:
+            haltMotors(flywheelStatus,intakeStatus)
+        
+
+# Set up (but don't start) callbacks for autonomous and driver control periods.
+competition.autonomous(autonomous)
+competition.drivercontrol(drivercontrol)
+
+# Run the pre-autonomous function.
+pre_auton()
+
+# Robot Mesh Studio runtime continues to run until all threads and
+# competition callbacks are finished.
