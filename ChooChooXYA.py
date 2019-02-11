@@ -352,7 +352,8 @@ def drivercontrol():
         else:
             haltMotors(flywheelStatus,intakeStatus)
 
-# rmbuild v5 stop && rmbuild v5 ChooChooXYA.py -s 2
+# NOTE: rmbuild v5 stop && rmbuild v5 ChooChooXYA.py -s 2
+# NOTE: https://www.robotmesh.com/docs/vexv5-python/html/annotated.html
 
 # Set up (but don't start) callbacks for autonomous and driver control periods.
 competition.autonomous(autonomous)
