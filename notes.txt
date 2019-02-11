@@ -23,3 +23,18 @@
         #     else:
         #         intakeStatus = turnIntakeOn()
         #     sys.sleep(300)"""
+
+
+
+
+
+        
+        # old drive code
+        # elif controller.axis2.value() > 15: #forwards
+        #     moveForwards(0.005,controller.axis2.value())
+        # elif controller.axis2.value() < -15: #backwards
+        #     moveBackwards(0.005,controller.axis2.value())
+        # elif controller.axis1.value() < -15: #left
+        #     turnLeft(0.005,controller.axis1.value())
+        # elif controller.axis1.value() > 15: #right
+        #     turnRight(0.005,controller.axis1.value())

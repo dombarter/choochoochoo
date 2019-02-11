@@ -337,21 +337,41 @@ def drivercontrol():
     intakeStatus = False
     column = 35
 
+    controller.set_deadband(10,vex.PercentUnits.PCT)
+
     while True:  # main loop
 
         flywheelStatus = checkLoader()
+
+        x_axis = controller.axis1.value()
+        y_axis = controller.axis2.value()
+
         if controller.axis3.value() > 10: #2 bar up
             moveArmUp(0.005,45)
         elif controller.axis3.value() < -10: #2bar down
             moveArmDown(0.005,45)
-        elif controller.axis2.value() > 15: #forwards
-            moveForwards(0.005,controller.axis2.value())
-        elif controller.axis2.value() < -15: #backwards
-            moveBackwards(0.005,controller.axis2.value())
-        elif controller.axis1.value() < -15: #left
-            turnLeft(0.005,controller.axis1.value())
-        elif controller.axis1.value() > 15: #right
-            turnRight(0.005,controller.axis1.value())
+
+        elif x_axis > 10 and y_axis > 10: #first quadrant
+            if math.fabs(x_axis) > math.fabs(y_axis):
+                turnRight(0.05,x_axis)
+            else:
+                moveForwards(0.05,y_axis)
+        elif x_axis > 10 and y_axis < -10: #second quadrant
+            if math.fabs(x_axis) > math.fabs(y_axis):
+                turnRight(0.05,x_axis)
+            else:
+                moveBackwards(0.05,y_axis)
+        elif x_axis < -10 and y_axis < -10: #third quadrant
+            if math.fabs(x_axis) > math.fabs(y_axis):
+                turnLeft(0.05,x_axis)
+            else:
+                moveBackwards(0.05,y_axis)
+        elif x_axis < -10 and y_axis > 10: #fourth quadrant 
+            if math.fabs(x_axis) > math.fabs(y_axis):
+                turnLeft(0.05,x_axis)
+            else:
+                moveForwards(0.05,y_axis)
+
         elif controller.buttonA.pressing(): #fire ball
             flywheelStatus = fireABall()
             sys.sleep(0.3)
