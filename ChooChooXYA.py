@@ -226,7 +226,7 @@ def turnFlywheelOn(delayStartup = True):
     flywheelOne.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
     flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
     if delayStartup == True:
-        while(flywheelOne.velocity(vex.VelocityUnits.PCT) < 95): #hold the return of the function
+        while flywheelOne.velocity(vex.VelocityUnits.PCT) < 95: #hold the return of the function
             pass
     return True
 
@@ -262,8 +262,8 @@ def moveArmDown(time,power):
 def fireABall():
     flywheelStatus = turnFlywheelOn()
     loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
-    while(flywheelOne.velocity(vex.VelocityUnits.PCT) > 90):
-        continue
+    while flywheelOne.velocity(vex.VelocityUnits.PCT) > 90:
+        pass
     loader.stop(vex.BrakeType.COAST)
     return True
 
@@ -305,13 +305,17 @@ competition = vex.Competition()
 # Main program ----------------------------------------------------------------
     
 def pre_auton():
-    # All activities that occur before competition start
-    # Example: setting initial positions
     pass
 
 def autonomous():
-    # Place autonomous code here
-    pass
+    fireABall()
+    turnFlywheelOn(False)
+    turnIntakeOn()
+    robot.moveToXYA(-80,0)
+    robot.moveBy(-80)
+    robot.moveBy(60)
+    fireABall()
+    turnIntakeOff()
 
 def drivercontrol():
 
@@ -321,9 +325,9 @@ def drivercontrol():
 
     flywheelStatus = turnFlywheelOn()
 
-    while True:
-        checkLoader()
+    while True:  # main loop
 
+        checkLoader()
         if controller.axis3.value() > 10: #2 bar up
             moveArmUp(0.005,35)
         elif controller.axis3.value() < -10: #2bar down
@@ -348,7 +352,8 @@ def drivercontrol():
         else:
             haltMotors(flywheelStatus,intakeStatus)
 
-        
+# rmbuild v5 stop && rmbuild v5 ChooChooXYA.py -s 2
+
 # Set up (but don't start) callbacks for autonomous and driver control periods.
 competition.autonomous(autonomous)
 competition.drivercontrol(drivercontrol)
