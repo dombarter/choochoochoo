@@ -5,6 +5,27 @@ import vex
 from vex import *
 import math
 
+# Robot Setup -----------------------------------------------------------------
+
+wheelTravel = 310 # circumference of the wheel (mm)
+trackWidth = 370 # width of the chassis (mm)
+turnSpeed = 25 # how fast the robot will turn (%)
+movementSpeed = 50 # how fast the robot will go forwards and back (%)
+
+brain       = vex.Brain()
+controller  = vex.Controller(vex.ControllerType.PRIMARY)
+
+twoBar      = vex.Motor(vex.Ports.PORT1 , vex.GearSetting.RATIO18_1, False)
+leftMotor   = vex.Motor(vex.Ports.PORT14, vex.GearSetting.RATIO18_1, False) 
+rightMotor  = vex.Motor(vex.Ports.PORT15, vex.GearSetting.RATIO18_1, True) 
+flywheelOne = vex.Motor(vex.Ports.PORT9 , vex.GearSetting.RATIO18_1, True) 
+flywheelTwo = vex.Motor(vex.Ports.PORT10, vex.GearSetting.RATIO18_1, False) 
+intake      = vex.Motor(vex.Ports.PORT16, vex.GearSetting.RATIO18_1, False)
+loader      = vex.Motor(vex.Ports.PORT11, vex.GearSetting.RATIO18_1, False)
+
+sonar       = vex.Sonar(brain.three_wire_port.c)
+dt          = vex.Drivetrain(leftMotor, rightMotor, wheelTravel, trackWidth, vex.DistanceUnits.MM)
+
 # Robot Class -----------------------------------------------------------------
 
 class Robot:
@@ -227,9 +248,11 @@ def turnFlywheelOn(delay = True):
     flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
 
     if delay == True:
-        while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 95:
+        while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 90:
             pass
-    return True
+        return True
+    else:
+        return True
 
 #turns the flywheel off
 def turnFlywheelOff():
@@ -261,9 +284,9 @@ def moveArmDown(time,power):
 
 #shoot a ball
 def fireABall():
-    turnFlywheelOn()
+    turnFlywheelOn(True)
     loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
-    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 90:
+    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 85:
         pass
     loader.stop(vex.BrakeType.COAST)
     return True
@@ -279,31 +302,6 @@ def checkLoader():
         loader.spin(vex.DirectionType.FWD,30,vex.VelocityUnits.PCT)
         return False
 
-
-# Robot Setup -----------------------------------------------------------------
-
-wheelTravel = 310 # circumference of the wheel (mm)
-trackWidth = 370 # width of the chassis (mm)
-turnSpeed = 25 # how fast the robot will turn (%)
-movementSpeed = 50 # how fast the robot will go forwards and back (%)
-
-brain       = vex.Brain()
-controller  = vex.Controller(vex.ControllerType.PRIMARY)
-
-twoBar      = vex.Motor(vex.Ports.PORT1 , vex.GearSetting.RATIO18_1, False)
-leftMotor   = vex.Motor(vex.Ports.PORT14, vex.GearSetting.RATIO18_1, False) 
-rightMotor  = vex.Motor(vex.Ports.PORT15, vex.GearSetting.RATIO18_1, True) 
-flywheelOne = vex.Motor(vex.Ports.PORT9 , vex.GearSetting.RATIO18_1, True) 
-flywheelTwo = vex.Motor(vex.Ports.PORT10, vex.GearSetting.RATIO18_1, False) 
-intake      = vex.Motor(vex.Ports.PORT16, vex.GearSetting.RATIO18_1, False)
-loader      = vex.Motor(vex.Ports.PORT11, vex.GearSetting.RATIO18_1, False)
-
-sonar       = vex.Sonar(brain.three_wire_port.c)
-dt          = vex.Drivetrain(leftMotor, rightMotor, wheelTravel, trackWidth, vex.DistanceUnits.MM)
-
-robot = Robot(dt,turnSpeed,movementSpeed) #create the robot class
-competition = vex.Competition()
-
 # Main program ----------------------------------------------------------------
     
 def pre_auton():
@@ -311,24 +309,21 @@ def pre_auton():
 
 def autonomous():
 
-    fireABall() #fire a ball
+    fireABall() #fire first ball
     turnIntakeOn()
 
     robot.moveToXYA(-100,0) #collect ball
-    turnIntakeOff()
     robot.moveBy(-100)
 
     robot.moveToXYA(0,65) #move to second position
-
     fireABall() #fire second ball
-    
+    turnIntakeOff()
+
     moveArmUp(0.45,50) #line up to bottom flag
-    haltMotors(False,False)
+    haltMotors(False,False) #turn all motors
     robot.rotateTo(-35)
     robot.moveBy(20)
     robot.moveBy(-20)
-
-    haltMotors(False,False) #finish autonomous
 
 def drivercontrol():
 
@@ -350,22 +345,33 @@ def drivercontrol():
         elif controller.axis3.value() < -10: #2bar down
             moveArmDown(0.005,45)
 
-        elif x_axis >= 0 and y_axis >= 0: #first quadrant
+        #controller
+        elif x_axis == 0 and y_axis > 0: # x = 0 line
+            moveForwards(0.05,y_axis)
+        elif x_axis == 0 and y_axis < 0:
+            moveBackwards(0.05,y_axis)
+        elif y_axis == 0 and x_axis > 0: # y = 0 line
+            turnRight(0.05,x_axis)
+        elif y_axis == 0 and x_axis < 0:
+            turnLeft(0.05,x_axis)
+
+        #controller
+        elif x_axis > 0 and y_axis > 0: #first quadrant
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnRight(0.05,x_axis)
             else:
                 moveForwards(0.05,y_axis)
-        elif x_axis >= 0 and y_axis <= 0: #second quadrant
+        elif x_axis > 0 and y_axis < 0: #second quadrant
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnRight(0.05,x_axis)
             else:
                 moveBackwards(0.05,y_axis)
-        elif x_axis <= 0 and y_axis <= 0: #third quadrant
+        elif x_axis < 0 and y_axis < 0: #third quadrant
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnLeft(0.05,x_axis)
             else:
                 moveBackwards(0.05,y_axis)
-        elif x_axis <= 0 and y_axis >= 0: #fourth quadrant 
+        elif x_axis < 0 and y_axis > 0: #fourth quadrant 
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnLeft(0.05,x_axis)
             else:
@@ -386,6 +392,9 @@ def drivercontrol():
 # NOTE: rmbuild v5 stop && rmbuild v5 ChooChooXYA.py -s 2
 # NOTE: https://www.robotmesh.com/docs/vexv5-python/html/annotated.html
 
+robot = Robot(dt,turnSpeed,movementSpeed) #create the robot class
+competition = vex.Competition()
+
 # Set up (but don't start) callbacks for autonomous and driver control periods.
 competition.autonomous(autonomous)
 competition.drivercontrol(drivercontrol)
@@ -395,3 +404,4 @@ pre_auton()
 
 # Robot Mesh Studio runtime continues to run until all threads and
 # competition callbacks are finished.
+
