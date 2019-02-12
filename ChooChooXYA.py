@@ -311,9 +311,7 @@ def pre_auton():
 
 def autonomous():
 
-    turnFlywheelOn() #fire first ball
-    fireABall() 
-    turnFlywheelOn(False)
+    fireABall() #fire a ball
     turnIntakeOn()
 
     robot.moveToXYA(-100,0) #collect ball
@@ -324,8 +322,9 @@ def autonomous():
 
     fireABall() #fire second ball
     
-    moveArmUp(0.13,20) #line up to bottom flag
-    robot.rotateTo(-40)
+    moveArmUp(0.45,50) #line up to bottom flag
+    haltMotors(False,False)
+    robot.rotateTo(-35)
     robot.moveBy(20)
     robot.moveBy(-20)
 
