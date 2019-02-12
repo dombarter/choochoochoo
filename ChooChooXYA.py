@@ -350,22 +350,22 @@ def drivercontrol():
         elif controller.axis3.value() < -10: #2bar down
             moveArmDown(0.005,45)
 
-        elif x_axis > 10 and y_axis > 10: #first quadrant
+        elif x_axis >= 0 and y_axis >= 0: #first quadrant
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnRight(0.05,x_axis)
             else:
                 moveForwards(0.05,y_axis)
-        elif x_axis > 10 and y_axis < -10: #second quadrant
+        elif x_axis >= 0 and y_axis <= 0: #second quadrant
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnRight(0.05,x_axis)
             else:
                 moveBackwards(0.05,y_axis)
-        elif x_axis < -10 and y_axis < -10: #third quadrant
+        elif x_axis <= 0 and y_axis <= 0: #third quadrant
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnLeft(0.05,x_axis)
             else:
                 moveBackwards(0.05,y_axis)
-        elif x_axis < -10 and y_axis > 10: #fourth quadrant 
+        elif x_axis <= 0 and y_axis >= 0: #fourth quadrant 
             if math.fabs(x_axis) > math.fabs(y_axis):
                 turnLeft(0.05,x_axis)
             else:
