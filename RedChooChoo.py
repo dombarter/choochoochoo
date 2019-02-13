@@ -319,7 +319,7 @@ def autonomous():
     robot.moveToXYA(100,5)
     robot.moveBy(-100)
 
-    robot.moveToXYA(0,70,7)
+    robot.moveToXYA(0,75,7)
     fireABall()
     turnIntakeOff()
 
