@@ -250,7 +250,7 @@ def turnFlywheelOn(delay = True):
     flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
 
     if delay == True:
-        while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 90:
+        while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 95:
             pass
         return True
     else:
@@ -288,7 +288,7 @@ def moveArmDown(time,power):
 def fireABall():
     turnFlywheelOn(True)
     loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
-    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 80:
+    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 85:
         pass
     loader.stop(vex.BrakeType.COAST)
     return True

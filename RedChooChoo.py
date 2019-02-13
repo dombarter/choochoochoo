@@ -250,7 +250,7 @@ def turnFlywheelOn(delay = True):
     flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
 
     if delay == True:
-        while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 90:
+        while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 95:
             pass
         return True
     else:
@@ -288,7 +288,7 @@ def moveArmDown(time,power):
 def fireABall():
     turnFlywheelOn(True)
     loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
-    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 80:
+    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 85:
         pass
     loader.stop(vex.BrakeType.COAST)
     return True
@@ -311,21 +311,23 @@ def pre_auton():
 
 def autonomous():
 
-    fireABall() #fire first ball
-    turnIntakeOn()
+    turnFlywheelOn(False)
+    robot.rotateTo(7)
+    fireABall()
 
-    robot.moveToXYA(-100,5) #collect ball
+    turnIntakeOn()
+    robot.moveToXYA(100,5)
     robot.moveBy(-100)
 
-    robot.moveToXYA(0,65) #move to second position
-    fireABall() #fire second ball
+    robot.moveToXYA(0,70,7)
+    fireABall()
     turnIntakeOff()
 
-    moveArmUp(0.45,50) #line up to bottom flag
-    haltMotors(False,False) #turn all motors
-    robot.rotateTo(-35)
-    robot.moveBy(20)
-    robot.moveBy(-20)
+    moveArmUp(0.50,50) 
+    haltMotors(False,False)
+    robot.rotateTo(0)
+    robot.moveBy(30)
+    robot.moveBy(-30)
 
 def drivercontrol():
 
