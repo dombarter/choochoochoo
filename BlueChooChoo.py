@@ -24,6 +24,8 @@ intake      = vex.Motor(vex.Ports.PORT16, vex.GearSetting.RATIO18_1, False)
 loader      = vex.Motor(vex.Ports.PORT11, vex.GearSetting.RATIO18_1, False)
 
 sonar       = vex.Sonar(brain.three_wire_port.c)
+sonarLeft   = vex.Sonar(brain.three_wire_port.e)
+sonarRight  = vex.Sonar(brain.three_wire_port.g)
 dt          = vex.Drivetrain(leftMotor, rightMotor, wheelTravel, trackWidth, vex.DistanceUnits.MM)
 
 # Robot Class -----------------------------------------------------------------
@@ -286,7 +288,7 @@ def moveArmDown(time,power):
 def fireABall():
     turnFlywheelOn(True)
     loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
-    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 85:
+    while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 80:
         pass
     loader.stop(vex.BrakeType.COAST)
     return True
@@ -312,7 +314,7 @@ def autonomous():
     fireABall() #fire first ball
     turnIntakeOn()
 
-    robot.moveToXYA(-100,0) #collect ball
+    robot.moveToXYA(-100,5) #collect ball
     robot.moveBy(-100)
 
     robot.moveToXYA(0,65) #move to second position
