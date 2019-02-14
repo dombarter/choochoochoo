@@ -250,8 +250,14 @@ def turnFlywheelOn(delay = True):
     flywheelTwo.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
 
     if delay == True:
+        killTime = 3
+        counter = 0
         while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) < 95:
-            pass
+            counter = counter + 0.05
+            if counter >= killTime:
+                break
+            sys.sleep(0.05)
+
         return True
     else:
         return True
@@ -303,7 +309,6 @@ def fireABall():
 
     while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 85:
         counter = counter + 0.05
-        controller.screen.print_(counter)
         if counter >= killTime:
             break
         sys.sleep(0.05)
