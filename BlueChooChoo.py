@@ -358,6 +358,7 @@ def drivercontrol():
     column = 35
 
     controller.set_deadband(10,vex.PercentUnits.PCT)
+    controller.screen.print_("18 LIMIT ON")
 
     while True:  # main loop
 
@@ -407,9 +408,11 @@ def drivercontrol():
         elif controller.buttonUp.pressing():
             if twoBarStatus == True:
                 twoBarStatus = False
+                controller.screen.print_("18 LIMIT ON ")
             else:
                 twoBarStatus = True
-            sys.sleep(0.4)
+                controller.screen.print_("18 LIMIT OFF")
+            sys.sleep(0.75)
 
         elif controller.buttonA.pressing(): #fire ball
             flywheelStatus = fireABall()
