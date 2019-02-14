@@ -271,11 +271,20 @@ def turnIntakeOff():
     return False
 
 #move the arm up
-def moveArmUp(time,power):
+def moveArmUp(time,power,heightAllowed):
     #time measured in milliseconds, power measured in 0-100 percentage
+
     newPower = math.fabs(power)
-    twoBar.spin(vex.DirectionType.REV,newPower,vex.VelocityUnits.PCT)
-    sys.sleep(time)
+
+    if heightAllowed == True:
+        twoBar.spin(vex.DirectionType.REV,newPower,vex.VelocityUnits.PCT)
+        sys.sleep(time)
+    else:
+        if math.fabs(twoBar.rotation(vex.RotationUnits.DEG)) > 240:
+            twoBar.stop(vex.BrakeType.HOLD)
+        else:
+            twoBar.spin(vex.DirectionType.REV,newPower,vex.VelocityUnits.PCT)
+            sys.sleep(time)
 
 #move the arm down
 def moveArmDown(time,power):
@@ -288,8 +297,17 @@ def moveArmDown(time,power):
 def fireABall():
     turnFlywheelOn(True)
     loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+
+    killTime = 2.5
+    counter = 0
+
     while math.fabs(flywheelOne.velocity(vex.VelocityUnits.PCT)) > 85:
-        pass
+        counter = counter + 0.05
+        controller.screen.print_(counter)
+        if counter >= killTime:
+            break
+        sys.sleep(0.05)
+
     loader.stop(vex.BrakeType.COAST)
     return True
 
@@ -331,6 +349,7 @@ def drivercontrol():
 
     flywheelStatus = False
     intakeStatus = False
+    twoBarStatus = False
     column = 35
 
     controller.set_deadband(10,vex.PercentUnits.PCT)
@@ -343,7 +362,7 @@ def drivercontrol():
         y_axis = controller.axis2.value()
 
         if controller.axis3.value() > 10: #2 bar up
-            moveArmUp(0.005,45)
+            moveArmUp(0.005,45,twoBarStatus)
         elif controller.axis3.value() < -10: #2bar down
             moveArmDown(0.005,45)
 
@@ -378,6 +397,14 @@ def drivercontrol():
                 turnLeft(0.05,x_axis)
             else:
                 moveForwards(0.05,y_axis)
+
+        #arm 18 stopper
+        elif controller.buttonUp.pressing():
+            if twoBarStatus == True:
+                twoBarStatus = False
+            else:
+                twoBarStatus = True
+            sys.sleep(0.4)
 
         elif controller.buttonA.pressing(): #fire ball
             flywheelStatus = fireABall()
