@@ -267,7 +267,7 @@ def turnFlywheelOff():
     return False
 
 #turn the intake on
-def turnIntakeOn():
+def turnIntakeOn():    
     intake.spin(vex.DirectionType.REV,100,vex.VelocityUnits.PCT)
     return True
 
@@ -370,10 +370,10 @@ def drivercontrol():
         y_axis = controller.axis2.value()
 
         if controller.axis3.value() > 10: #2 bar up
-            moveArmUp(0.005,45,twoBarStatus)
+            moveArmUp(0.005,100,twoBarStatus)
             dt.stop(vex.BrakeType.BRAKE)
         elif controller.axis3.value() < -10: #2bar down
-            moveArmDown(0.005,45)
+            moveArmDown(0.005,100)
             dt.stop(vex.BrakeType.BRAKE)
         #controller
         elif x_axis == 0 and y_axis > 0: # x = 0 line

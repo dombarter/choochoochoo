@@ -333,22 +333,7 @@ def pre_auton():
     pass
 
 def autonomous():
-
-    fireABall() #fire first ball
-    turnIntakeOn()
-
-    robot.moveToXYA(-100,5) #collect ball
-    robot.moveBy(-100)
-
-    robot.moveToXYA(0,65) #move to second position
-    fireABall() #fire second ball
-    turnIntakeOff()
-
-    moveArmUp(0.45,50,True) #line up to bottom flag
-    haltMotors(False,False) #turn all motors
-    robot.rotateTo(-35)
-    robot.moveBy(25)
-    robot.moveBy(-25)
+    pass
 
 def drivercontrol():
 
