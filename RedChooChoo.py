@@ -339,14 +339,14 @@ def autonomous():
     fireABall()
 
     turnIntakeOn()
-    robot.moveToXYA(100,5)
+    robot.moveToXYA(100,0)
     robot.moveBy(-100)
 
     robot.moveToXYA(0,75,7)
     fireABall()
     turnIntakeOff()
 
-    moveArmUp(0.50,50) 
+    moveArmUp(0.50,50,True) 
     haltMotors(False,False)
     robot.rotateTo(-2)
     robot.moveBy(30)
@@ -371,9 +371,10 @@ def drivercontrol():
 
         if controller.axis3.value() > 10: #2 bar up
             moveArmUp(0.005,45,twoBarStatus)
+            dt.stop(vex.BrakeType.BRAKE)
         elif controller.axis3.value() < -10: #2bar down
             moveArmDown(0.005,45)
-
+            dt.stop(vex.BrakeType.BRAKE)
         #controller
         elif x_axis == 0 and y_axis > 0: # x = 0 line
             moveForwards(0.05,y_axis)

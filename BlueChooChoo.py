@@ -273,7 +273,7 @@ def turnIntakeOn():
 
 #turn the intake off
 def turnIntakeOff():
-    intake.stop(vex.BrakeType.COAST)
+    intake.stop()
     return False
 
 #move the arm up
@@ -344,11 +344,11 @@ def autonomous():
     fireABall() #fire second ball
     turnIntakeOff()
 
-    moveArmUp(0.45,50) #line up to bottom flag
+    moveArmUp(0.45,50,True) #line up to bottom flag
     haltMotors(False,False) #turn all motors
     robot.rotateTo(-35)
-    robot.moveBy(20)
-    robot.moveBy(-20)
+    robot.moveBy(25)
+    robot.moveBy(-25)
 
 def drivercontrol():
 
@@ -369,8 +369,10 @@ def drivercontrol():
 
         if controller.axis3.value() > 10: #2 bar up
             moveArmUp(0.005,45,twoBarStatus)
+            dt.stop(vex.BrakeType.BRAKE)
         elif controller.axis3.value() < -10: #2bar down
             moveArmDown(0.005,45)
+            dt.stop(vex.BrakeType.BRAKE)
 
         #controller
         elif x_axis == 0 and y_axis > 0: # x = 0 line
