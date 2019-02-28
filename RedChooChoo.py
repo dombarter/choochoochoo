@@ -334,23 +334,31 @@ def pre_auton():
 
 def autonomous():
 
-    turnFlywheelOn(False)
-    robot.rotateTo(7)
-    fireABall()
-
+    turnFlywheelOn(False) #Grab first ball from under cap
     turnIntakeOn()
-    robot.moveToXYA(100,0)
-    robot.moveBy(-100)
+    robot.moveBy(100)
+    robot.moveBy(-95)
 
-    robot.moveToXYA(0,75,7)
+    robot.rotateTo(87) #fire top two flags
+    fireABall()
+    robot.moveBy(65)
     fireABall()
     turnIntakeOff()
 
-    moveArmUp(0.50,50,True) 
-    haltMotors(False,False)
-    robot.rotateTo(-2)
-    robot.moveBy(30)
+    moveArmUp(0.5,50,False) #score lower flag
+    twoBar.stop(vex.BrakeType.HOLD)
+    robot.rotateTo(75)
+    robot.moveBy(20)
+    robot.moveBy(-20)
+    twoBar.stop(vex.BrakeType.COAST)
+
+    robot.rotateTo(90) #score cap
     robot.moveBy(-30)
+    robot.rotateTo(5)
+    robot.moveBy(27)
+    sys.sleep(0.5)
+    moveArmUp(0.25,100,False)
+    moveArmDown(0.25,100)
 
 def drivercontrol():
 

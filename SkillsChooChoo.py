@@ -10,7 +10,7 @@ import math
 wheelTravel = 310 # circumference of the wheel (mm)
 trackWidth = 370 # width of the chassis (mm)
 turnSpeed = 25 # how fast the robot will turn (%)
-movementSpeed = 50 # how fast the robot will go forwards and back (%)
+movementSpeed = 55 # how fast the robot will go forwards and back (%)
 
 brain       = vex.Brain()
 controller  = vex.Controller(vex.ControllerType.PRIMARY)
@@ -267,13 +267,13 @@ def turnFlywheelOff():
     return False
 
 #turn the intake on
-def turnIntakeOn():
+def turnIntakeOn():    
     intake.spin(vex.DirectionType.REV,100,vex.VelocityUnits.PCT)
     return True
 
 #turn the intake off
 def turnIntakeOff():
-    intake.stop()
+    intake.stop(vex.BrakeType.COAST)
     return False
 
 #move the arm up
@@ -360,6 +360,7 @@ def autonomous():
     moveArmUp(0.25,100,False)
     moveArmDown(0.25,100)
 
+
 def drivercontrol():
 
     flywheelStatus = False
@@ -368,7 +369,7 @@ def drivercontrol():
     column = 35
 
     controller.set_deadband(10,vex.PercentUnits.PCT)
-    controller.screen.print_("18 LIMIT ON")
+    controller.screen.print_("18 LIMIT ON ")
 
     while True:  # main loop
 
@@ -383,7 +384,6 @@ def drivercontrol():
         elif controller.axis3.value() < -10: #2bar down
             moveArmDown(0.005,100)
             dt.stop(vex.BrakeType.BRAKE)
-
         #controller
         elif x_axis == 0 and y_axis > 0: # x = 0 line
             moveForwards(0.05,y_axis)
