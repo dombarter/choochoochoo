@@ -302,7 +302,7 @@ def moveArmDown(time,power):
 #shoot a ball
 def fireABall():
     turnFlywheelOn(True)
-    loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    loader.spin(vex.DirectionType.FWD,80,vex.VelocityUnits.PCT)
 
     killTime = 2.5
     counter = 0
@@ -339,7 +339,7 @@ def autonomous():
     robot.moveBy(100)
     robot.moveBy(-95)
 
-    robot.rotateTo(87) #fire top two flags
+    robot.rotateTo(-85) #fire top two flags
     fireABall()
     robot.moveBy(65)
     fireABall()
@@ -347,14 +347,14 @@ def autonomous():
 
     moveArmUp(0.5,50,False) #score lower flag
     twoBar.stop(vex.BrakeType.HOLD)
-    robot.rotateTo(75)
-    robot.moveBy(20)
-    robot.moveBy(-20)
+    robot.rotateTo(-100)
+    robot.moveBy(23)
+    robot.moveBy(-23)
     twoBar.stop(vex.BrakeType.COAST)
 
-    robot.rotateTo(90) #score cap
-    robot.moveBy(-30)
-    robot.rotateTo(5)
+    robot.rotateTo(-90) #score cap
+    robot.moveBy(5)
+    robot.rotateTo(-5)
     robot.moveBy(27)
     sys.sleep(0.5)
     moveArmUp(0.25,100,False)

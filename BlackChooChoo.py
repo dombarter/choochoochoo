@@ -302,7 +302,7 @@ def moveArmDown(time,power):
 #shoot a ball
 def fireABall():
     turnFlywheelOn(True)
-    loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    loader.spin(vex.DirectionType.FWD,80,vex.VelocityUnits.PCT)
 
     killTime = 2.5
     counter = 0
