@@ -10,7 +10,7 @@ import math
 wheelTravel = 310 # circumference of the wheel (mm)
 trackWidth = 370 # width of the chassis (mm)
 turnSpeed = 25 # how fast the robot will turn (%)
-movementSpeed = 55 # how fast the robot will go forwards and back (%)
+movementSpeed = 50 # how fast the robot will go forwards and back (%)
 
 brain       = vex.Brain()
 controller  = vex.Controller(vex.ControllerType.PRIMARY)
@@ -302,7 +302,7 @@ def moveArmDown(time,power):
 #shoot a ball
 def fireABall():
     turnFlywheelOn(True)
-    loader.spin(vex.DirectionType.FWD,100,vex.VelocityUnits.PCT)
+    loader.spin(vex.DirectionType.FWD,80,vex.VelocityUnits.PCT)
 
     killTime = 2.5
     counter = 0
@@ -314,18 +314,21 @@ def fireABall():
         sys.sleep(0.05)
 
     loader.stop(vex.BrakeType.COAST)
-    return True
+    return False
 
 #check the loader for a ball
-def checkLoader():
+def checkLoader(loaderStatus_):
     if sonar.distance(vex.DistanceUnits.IN) < 2 and sonar.distance(vex.DistanceUnits.IN) > 0:
         loader.stop(vex.BrakeType.COAST)
         turnFlywheelOn(False)
         return True
     else:
-        turnFlywheelOff()
-        loader.spin(vex.DirectionType.FWD,30,vex.VelocityUnits.PCT)
-        return False
+        if loaderStatus_ == False:
+            turnFlywheelOff()
+            loader.spin(vex.DirectionType.FWD,30,vex.VelocityUnits.PCT)
+            return False
+        else:
+            return True
 
 # Main program ----------------------------------------------------------------
     
@@ -339,7 +342,7 @@ def autonomous():
     robot.moveBy(100)
     robot.moveBy(-95)
 
-    robot.rotateTo(87) #fire top two flags
+    robot.rotateTo(-85) #fire top two flags
     fireABall()
     robot.moveBy(65)
     fireABall()
@@ -347,24 +350,24 @@ def autonomous():
 
     moveArmUp(0.5,50,False) #score lower flag
     twoBar.stop(vex.BrakeType.HOLD)
-    robot.rotateTo(75)
-    robot.moveBy(20)
-    robot.moveBy(-20)
+    robot.rotateTo(-100)
+    robot.moveBy(23)
+    robot.moveBy(-23)
     twoBar.stop(vex.BrakeType.COAST)
 
-    robot.rotateTo(90) #score cap
-    robot.moveBy(-30)
-    robot.rotateTo(5)
+    robot.rotateTo(-90) #score cap
+    robot.moveBy(5)
+    robot.rotateTo(-5)
     robot.moveBy(27)
     sys.sleep(0.5)
     moveArmUp(0.25,100,False)
     moveArmDown(0.25,100)
 
-
 def drivercontrol():
 
     flywheelStatus = False
     intakeStatus = False
+    loaderStatus = False
     twoBarStatus = False
     column = 35
 
@@ -373,7 +376,9 @@ def drivercontrol():
 
     while True:  # main loop
 
-        flywheelStatus = checkLoader()
+        result = checkLoader(loaderStatus)
+        loaderStatus = result
+        flywheelStatus = result
 
         x_axis = controller.axis1.value()
         y_axis = controller.axis2.value()
@@ -427,14 +432,16 @@ def drivercontrol():
             sys.sleep(0.75)
 
         elif controller.buttonA.pressing(): #fire ball
-            flywheelStatus = fireABall()
-            sys.sleep(0.3)
+            result = fireABall()
+            flywheelStatus = result
+            loaderStatus = result
+            sys.sleep(0.5)
         elif controller.buttonB.pressing(): #intake on/off
             if intakeStatus == True:
                 intakeStatus = turnIntakeOff()
             else:
                 intakeStatus = turnIntakeOn()
-            sys.sleep(0.3)
+            sys.sleep(0.5)
         else:
             haltMotors(flywheelStatus,intakeStatus)
 

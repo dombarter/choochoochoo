@@ -314,18 +314,21 @@ def fireABall():
         sys.sleep(0.05)
 
     loader.stop(vex.BrakeType.COAST)
-    return True
+    return False
 
 #check the loader for a ball
-def checkLoader():
+def checkLoader(loaderStatus_):
     if sonar.distance(vex.DistanceUnits.IN) < 2 and sonar.distance(vex.DistanceUnits.IN) > 0:
         loader.stop(vex.BrakeType.COAST)
         turnFlywheelOn(False)
         return True
     else:
-        turnFlywheelOff()
-        loader.spin(vex.DirectionType.FWD,30,vex.VelocityUnits.PCT)
-        return False
+        if loaderStatus_ == False:
+            turnFlywheelOff()
+            loader.spin(vex.DirectionType.FWD,30,vex.VelocityUnits.PCT)
+            return False
+        else:
+            return True
 
 # Main program ----------------------------------------------------------------
     
@@ -339,6 +342,7 @@ def drivercontrol():
 
     flywheelStatus = False
     intakeStatus = False
+    loaderStatus = False
     twoBarStatus = False
     column = 35
 
@@ -347,7 +351,9 @@ def drivercontrol():
 
     while True:  # main loop
 
-        flywheelStatus = checkLoader()
+        result = checkLoader(loaderStatus)
+        loaderStatus = result
+        flywheelStatus = result
 
         x_axis = controller.axis1.value()
         y_axis = controller.axis2.value()
@@ -402,14 +408,16 @@ def drivercontrol():
             sys.sleep(0.75)
 
         elif controller.buttonA.pressing(): #fire ball
-            flywheelStatus = fireABall()
-            sys.sleep(0.3)
+            result = fireABall()
+            flywheelStatus = result
+            loaderStatus = result
+            sys.sleep(0.5)
         elif controller.buttonB.pressing(): #intake on/off
             if intakeStatus == True:
                 intakeStatus = turnIntakeOff()
             else:
                 intakeStatus = turnIntakeOn()
-            sys.sleep(0.3)
+            sys.sleep(0.5)
         else:
             haltMotors(flywheelStatus,intakeStatus)
 
