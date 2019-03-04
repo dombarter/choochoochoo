@@ -363,6 +363,16 @@ def autonomous():
     moveArmUp(0.25,100,False)
     moveArmDown(0.25,100)
 
+    robot.moveBy(-27) #move to second position
+    robot.rotateTo(-90)
+    robot.moveBy(160)
+    robot.rotateTo(0)
+
+    turnIntakeOn() #grab second ball
+    robot.moveBy(100)
+    robot.moveBy(-95)
+
+
 def drivercontrol():
 
     flywheelStatus = False
